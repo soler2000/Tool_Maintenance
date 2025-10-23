@@ -54,6 +54,25 @@ const elements = {
   createFailureCodeForm: document.getElementById("create-failure-code-form"),
   createFailureReportForm: document.getElementById("create-failure-report-form"),
   createActionForm: document.getElementById("create-action-form"),
+  updateToolForm: document.getElementById("update-tool-form"),
+  updateToolId: document.getElementById("update-tool-id"),
+  updateMaintenanceForm: document.getElementById("update-maintenance-form"),
+  updateMaintenanceId: document.getElementById("update-maintenance-id"),
+  updateMaintenanceTool: document.getElementById("update-maintenance-tool"),
+  updateMaintenancePerformedBy: document.getElementById("update-maintenance-performed-by"),
+  updateShotCounterForm: document.getElementById("update-shot-counter-form"),
+  updateShotCounterId: document.getElementById("update-shot-counter-id"),
+  updateShotCounterRecordedBy: document.getElementById("update-shot-counter-recorded-by"),
+  updateFailureReportForm: document.getElementById("update-failure-report-form"),
+  updateFailureReportId: document.getElementById("update-failure-report-id"),
+  updateFailureReportTool: document.getElementById("update-failure-report-tool"),
+  updateFailureReportCode: document.getElementById("update-failure-report-code"),
+  updateFailureReportReportedBy: document.getElementById("update-failure-report-reported-by"),
+  updateActionForm: document.getElementById("update-action-form"),
+  updateActionId: document.getElementById("update-action-id"),
+  updateActionAssignedTo: document.getElementById("update-action-assigned-to"),
+  updateFailureCodeForm: document.getElementById("update-failure-code-form"),
+  updateFailureCodeId: document.getElementById("update-failure-code-id"),
   refreshButtons: {
     tools: document.getElementById("refresh-tools"),
     maintenance: document.getElementById("refresh-maintenance"),
@@ -169,6 +188,10 @@ function applyDefaultUserId() {
     elements.shotCounterRecordedBy,
     elements.failureReportReportedBy,
     elements.actionAssignedTo,
+    elements.updateMaintenancePerformedBy,
+    elements.updateShotCounterRecordedBy,
+    elements.updateFailureReportReportedBy,
+    elements.updateActionAssignedTo,
   ].forEach((input) => {
     if (!input) return;
     if (!input.value) {
@@ -489,7 +512,11 @@ function renderActionItems() {
   `;
 }
 
-function populateSelect(selectElement, options, { includeEmpty = false, emptyLabel = "None" } = {}) {
+function populateSelect(
+  selectElement,
+  options,
+  { includeEmpty = false, emptyLabel = "None", extraOptions = [] } = {},
+) {
   if (!selectElement) return;
   const currentValue = selectElement.value;
   selectElement.innerHTML = "";
@@ -505,8 +532,17 @@ function populateSelect(selectElement, options, { includeEmpty = false, emptyLab
     option.textContent = label;
     selectElement.appendChild(option);
   });
+  extraOptions.forEach(({ value, label }) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    selectElement.appendChild(option);
+  });
   if (currentValue) {
     selectElement.value = currentValue;
+    if (selectElement.value !== currentValue && includeEmpty) {
+      selectElement.value = "";
+    }
   }
 }
 
@@ -516,15 +552,46 @@ function refreshSelections() {
   populateSelect(elements.shotCounterTool, toolOptions);
   populateSelect(elements.failureReportTool, toolOptions);
   populateSelect(elements.actionTool, toolOptions);
+  populateSelect(elements.updateToolId, toolOptions, { includeEmpty: true, emptyLabel: "Select tool" });
+  populateSelect(elements.updateMaintenanceTool, toolOptions, { includeEmpty: true, emptyLabel: "Keep current" });
+  populateSelect(elements.updateFailureReportTool, toolOptions, { includeEmpty: true, emptyLabel: "Keep current" });
 
   const failureCodeOptions = state.data.failureCodes.map((code) => ({ value: code.id, label: `${code.code} — ${code.name}` }));
   populateSelect(elements.failureReportCode, failureCodeOptions, { includeEmpty: true, emptyLabel: "None" });
+  populateSelect(elements.updateFailureReportCode, failureCodeOptions, {
+    includeEmpty: true,
+    emptyLabel: "Keep current",
+    extraOptions: [{ value: "__clear__", label: "Remove code" }],
+  });
+  populateSelect(elements.updateFailureCodeId, failureCodeOptions, { includeEmpty: true, emptyLabel: "Select code" });
 
-  const failureReportOptions = state.data.failureReports.map((report) => ({ value: report.id, label: `${report.id.slice(0, 8)} – ${report.description?.slice(0, 40) || "Report"}` }));
+  const maintenanceOptions = state.data.maintenanceLogs.map((log) => ({
+    value: log.id,
+    label: `${log.tool_id} • ${log.performed_at ? formatDateTime(log.performed_at) : "No timestamp"}`,
+  }));
+  populateSelect(elements.updateMaintenanceId, maintenanceOptions, { includeEmpty: true, emptyLabel: "Select log" });
+
+  const shotCounterOptions = state.data.shotCounters.map((entry) => ({
+    value: entry.id,
+    label: `${entry.tool_id} • +${formatNumber(entry.shot_count)} (${entry.recorded_at ? formatDateTime(entry.recorded_at) : "No timestamp"})`,
+  }));
+  populateSelect(elements.updateShotCounterId, shotCounterOptions, { includeEmpty: true, emptyLabel: "Select entry" });
+
+  const failureReportOptions = state.data.failureReports.map((report) => ({
+    value: report.id,
+    label: `${report.id.slice(0, 8)} – ${report.description?.slice(0, 40) || "Report"}`,
+  }));
   populateSelect(elements.actionFailureReport, failureReportOptions, { includeEmpty: true, emptyLabel: "None" });
+  populateSelect(elements.updateFailureReportId, failureReportOptions, { includeEmpty: true, emptyLabel: "Select report" });
+
+  const actionOptions = state.data.actionItems.map((item) => ({
+    value: item.id,
+    label: `${item.title} – ${item.tool_id}`,
+  }));
+  populateSelect(elements.updateActionId, actionOptions, { includeEmpty: true, emptyLabel: "Select action" });
 }
 
-async function loadDashboard() {
+async function loadDashboard({ showNotification = true } = {}) {
   if (!state.token) return;
   try {
     state.loading = true;
@@ -545,7 +612,9 @@ async function loadDashboard() {
     renderActionItems();
     refreshSelections();
     applyDefaultUserId();
-    showToast("Dashboard updated");
+    if (showNotification) {
+      showToast("Dashboard updated");
+    }
   } catch (error) {
     console.error(error);
     showToast(error.message, "error");
@@ -585,6 +654,44 @@ function sanitisePayload(payload) {
     }
   });
   return cleaned;
+}
+
+function attachUpdateHandler({
+  form,
+  idField,
+  buildPath,
+  successMessage,
+  transform,
+  afterReset,
+  afterSuccess,
+}) {
+  if (!form) return;
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const payload = sanitisePayload(formDataToObject(form));
+    const identifier = payload[idField];
+    if (!identifier) {
+      showToast("Select a record to update", "error");
+      return;
+    }
+    delete payload[idField];
+    const data = transform ? transform(payload, identifier) : payload;
+    if (data == null || Object.keys(data).length === 0) {
+      showToast("Provide at least one field to update", "error");
+      return;
+    }
+    try {
+      await api(buildPath(identifier), { method: "PATCH", body: data });
+      form.reset();
+      afterReset?.();
+      await loadDashboard({ showNotification: false });
+      afterSuccess?.();
+      showToast(successMessage);
+    } catch (error) {
+      console.error(error);
+      showToast(error.message, "error");
+    }
+  });
 }
 
 function attachEventListeners() {
@@ -725,6 +832,58 @@ function attachEventListeners() {
       console.error(error);
       showToast(error.message, "error");
     }
+  });
+
+  attachUpdateHandler({
+    form: elements.updateToolForm,
+    idField: "tool_id",
+    buildPath: (id) => `/tools/${id}`,
+    successMessage: "Tool updated",
+  });
+
+  attachUpdateHandler({
+    form: elements.updateMaintenanceForm,
+    idField: "log_id",
+    buildPath: (id) => `/maintenance/${id}`,
+    successMessage: "Maintenance log updated",
+    afterReset: applyDefaultUserId,
+  });
+
+  attachUpdateHandler({
+    form: elements.updateShotCounterForm,
+    idField: "counter_id",
+    buildPath: (id) => `/shot-counters/${id}`,
+    successMessage: "Shot counter updated",
+    afterReset: applyDefaultUserId,
+  });
+
+  attachUpdateHandler({
+    form: elements.updateFailureCodeForm,
+    idField: "code_id",
+    buildPath: (id) => `/failures/codes/${id}`,
+    successMessage: "Failure code updated",
+  });
+
+  attachUpdateHandler({
+    form: elements.updateFailureReportForm,
+    idField: "report_id",
+    buildPath: (id) => `/failures/reports/${id}`,
+    successMessage: "Failure report updated",
+    afterReset: applyDefaultUserId,
+    transform: (data) => {
+      if (data.failure_code_id === "__clear__") {
+        return { ...data, failure_code_id: null };
+      }
+      return data;
+    },
+  });
+
+  attachUpdateHandler({
+    form: elements.updateActionForm,
+    idField: "action_id",
+    buildPath: (id) => `/actions/${id}`,
+    successMessage: "Action item updated",
+    afterReset: applyDefaultUserId,
   });
 
   Object.entries(elements.refreshButtons).forEach(([key, button]) => {
