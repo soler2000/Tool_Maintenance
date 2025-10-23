@@ -39,6 +39,8 @@ class ToolBase(APIModel):
     description: Optional[str]
     manufacturer: Optional[str]
     cavity_count: Optional[int]
+    initial_shot_count: int = 0
+    max_shot_count: Optional[int]
     status: ToolStatus = ToolStatus.active
     location: Optional[str]
 
@@ -52,6 +54,8 @@ class ToolUpdate(APIModel):
     description: Optional[str]
     manufacturer: Optional[str]
     cavity_count: Optional[int]
+    initial_shot_count: Optional[int]
+    max_shot_count: Optional[int]
     status: Optional[ToolStatus]
     location: Optional[str]
 

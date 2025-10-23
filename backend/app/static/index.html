@@ -10,150 +10,427 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <style>
-      :root {
-        color-scheme: light dark;
-        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-        line-height: 1.6;
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: #f8fafc;
-        min-height: 100%;
-      }
-
-      body {
-        margin: 0;
-        display: flex;
-        min-height: 100vh;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-      }
-
-      .hero {
-        max-width: 720px;
-        background: rgba(15, 23, 42, 0.75);
-        border-radius: 28px;
-        padding: 48px;
-        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.55);
-        backdrop-filter: blur(18px);
-        text-align: center;
-      }
-
-      h1 {
-        margin: 0 0 16px;
-        font-size: clamp(2.5rem, 5vw, 3.25rem);
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-
-      p.lead {
-        margin: 0 0 32px;
-        font-size: clamp(1.1rem, 2.5vw, 1.35rem);
-        color: rgba(241, 245, 249, 0.86);
-      }
-
-      .cta-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        align-items: center;
-        justify-content: center;
-      }
-
-      a.button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 14px 28px;
-        border-radius: 999px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-
-      a.button.primary {
-        background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-        color: #0f172a;
-        box-shadow: 0 18px 40px rgba(56, 189, 248, 0.35);
-      }
-
-      a.button.secondary {
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        color: rgba(241, 245, 249, 0.85);
-        background: rgba(15, 23, 42, 0.55);
-      }
-
-      a.button:hover {
-        transform: translateY(-2px) scale(1.01);
-      }
-
-      .features {
-        margin-top: 40px;
-        display: grid;
-        gap: 20px;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      }
-
-      .feature {
-        padding: 18px;
-        border-radius: 18px;
-        background: rgba(15, 23, 42, 0.55);
-        border: 1px solid rgba(148, 163, 184, 0.25);
-      }
-
-      .feature h3 {
-        margin: 0 0 8px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #bae6fd;
-      }
-
-      .feature p {
-        margin: 0;
-        font-size: 0.95rem;
-        color: rgba(226, 232, 240, 0.75);
-      }
-
-      footer {
-        margin-top: 48px;
-        font-size: 0.85rem;
-        color: rgba(148, 163, 184, 0.7);
-      }
-
-      @media (max-width: 640px) {
-        .hero {
-          padding: 32px;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    <main class="hero">
-      <h1>Tool Maintenance Portal</h1>
-      <p class="lead">
-        Keep your tooling fleet running smoothly with proactive maintenance tracking,
-        streamlined repair workflows, and real-time performance insights.
-      </p>
-      <div class="cta-group">
-        <a class="button primary" href="/docs">Explore the API</a>
-        <a class="button secondary" href="mailto:support@example.com">Contact Support</a>
-      </div>
-      <section class="features">
-        <div class="feature">
-          <h3>Plan Maintenance</h3>
-          <p>Schedule preventive maintenance and automatically notify technicians.</p>
+    <div id="app">
+      <aside class="panel auth-section">
+        <header>
+          <h1>Tool Maintenance Portal</h1>
+          <p>Authenticate to manage tools, maintenance, failures, and action items.</p>
+        </header>
+
+        <section class="auth-card" id="auth-card">
+          <div id="auth-forms">
+            <div class="card">
+              <h2>Sign in</h2>
+              <form id="login-form">
+                <label>
+                  Username
+                  <input type="text" name="username" autocomplete="username" required />
+                </label>
+                <label>
+                  Password
+                  <input type="password" name="password" autocomplete="current-password" required />
+                </label>
+                <button type="submit">Generate access token</button>
+              </form>
+            </div>
+
+            <div class="card">
+              <h2>Create an account</h2>
+              <form id="register-form">
+                <label>
+                  Username
+                  <input type="text" name="username" autocomplete="off" required />
+                </label>
+                <label>
+                  Password <small class="inline-help">Minimum of 8 characters</small>
+                  <input type="password" name="password" autocomplete="new-password" minlength="8" required />
+                </label>
+                <label>
+                  Full name
+                  <input type="text" name="full_name" autocomplete="name" required />
+                </label>
+                <label>
+                  Email address
+                  <input type="email" name="email" autocomplete="email" />
+                </label>
+                <label>
+                  Role
+                  <select name="role">
+                    <option value="technician">Technician</option>
+                    <option value="engineer">Engineer</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </label>
+                <button type="submit">Register new user</button>
+              </form>
+            </div>
+          </div>
+
+          <div id="user-summary" hidden>
+            <div class="card">
+              <h2>Session</h2>
+              <p><strong>Signed in as:</strong> <span id="session-username">-</span></p>
+              <p>
+                <strong>Default user id:</strong>
+                <span id="session-user-id" class="badge">not set</span>
+              </p>
+              <form id="user-id-form">
+                <label>
+                  Default user id
+                  <input type="text" name="user_id" placeholder="Paste the UUID returned during registration" />
+                </label>
+                <small class="muted">
+                  This identifier is used when creating maintenance logs, failure reports, and action items that
+                  require a user id.
+                </small>
+                <button type="submit" class="secondary">Save user id</button>
+              </form>
+              <button id="logout-button" class="secondary">Sign out</button>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <main>
+        <section class="panel" id="unauthenticated-note">
+          <h2>Dashboard locked</h2>
+          <p class="section-description">
+            Sign in to retrieve tool data, log maintenance, record failures, and assign action items. New accounts can be
+            created using the registration form on the left.
+          </p>
+        </section>
+
+        <div id="dashboard" hidden>
+          <nav class="panel tab-bar" id="dashboard-tabs" role="tablist" aria-label="Dashboard sections">
+            <button type="button" role="tab" id="tab-tools" aria-selected="true" aria-controls="tools-section" data-tab="tools">Tools</button>
+            <button type="button" role="tab" id="tab-maintenance" aria-selected="false" aria-controls="maintenance-section" data-tab="maintenance">Maintenance logs</button>
+            <button type="button" role="tab" id="tab-shot-counters" aria-selected="false" aria-controls="shot-counters-section" data-tab="shot-counters">Shot counters</button>
+            <button type="button" role="tab" id="tab-failure-reports" aria-selected="false" aria-controls="failure-reports-section" data-tab="failure-reports">Failure reports</button>
+            <button type="button" role="tab" id="tab-actions" aria-selected="false" aria-controls="actions-section" data-tab="actions">Action items</button>
+            <button type="button" role="tab" id="tab-failure-codes" aria-selected="false" aria-controls="failure-codes-section" data-tab="failure-codes">Failure codes</button>
+          </nav>
+
+          <section class="panel section tab-panel" id="tools-section" data-tab-panel="tools" role="tabpanel" aria-labelledby="tab-tools">
+            <div class="section-header">
+              <div>
+                <h2>Tools</h2>
+                <p class="section-description">Inventory of moulds and tooling assets.</p>
+              </div>
+              <button type="button" id="refresh-tools">Refresh</button>
+            </div>
+
+            <div class="table-wrapper" id="tools-table-wrapper"></div>
+
+            <form id="create-tool-form">
+              <fieldset>
+                <legend>Add new tool</legend>
+                <div class="flex-row">
+                  <label>
+                    Asset number
+                    <input type="text" name="asset_number" required />
+                  </label>
+                  <label>
+                    Name
+                    <input type="text" name="name" required />
+                  </label>
+                </div>
+                <label>
+                  Description
+                  <textarea name="description" placeholder="Optional"></textarea>
+                </label>
+                <div class="flex-row">
+                  <label>
+                    Manufacturer
+                    <input type="text" name="manufacturer" />
+                  </label>
+                  <label>
+                    Cavity count
+                    <input type="number" name="cavity_count" min="0" />
+                  </label>
+                </div>
+                <div class="flex-row">
+                  <label>
+                    Status
+                    <select name="status">
+                      <option value="active">Active</option>
+                      <option value="maintenance">Maintenance</option>
+                      <option value="retired">Retired</option>
+                    </select>
+                  </label>
+                  <label>
+                    Location
+                    <input type="text" name="location" />
+                  </label>
+                </div>
+                <div class="flex-row">
+                  <label>
+                    Initial shot count
+                    <input type="number" name="initial_shot_count" min="0" value="0" />
+                  </label>
+                  <label>
+                    Maximum shot count
+                    <input type="number" name="max_shot_count" min="0" placeholder="Optional" />
+                  </label>
+                </div>
+                <button type="submit">Create tool</button>
+              </fieldset>
+            </form>
+          </section>
+
+          <section class="panel section tab-panel" id="maintenance-section" data-tab-panel="maintenance" role="tabpanel" aria-labelledby="tab-maintenance" hidden>
+            <div class="section-header">
+              <div>
+                <h2>Maintenance logs</h2>
+                <p class="section-description">Track completed maintenance activities.</p>
+              </div>
+              <button type="button" id="refresh-maintenance">Refresh</button>
+            </div>
+
+            <div class="table-wrapper" id="maintenance-table-wrapper"></div>
+
+            <form id="create-maintenance-form">
+              <fieldset>
+                <legend>Record maintenance</legend>
+                <label>
+                  Tool
+                  <select name="tool_id" id="maintenance-tool" required></select>
+                </label>
+                <label>
+                  Performed by (user id)
+                  <input type="text" name="performed_by" id="maintenance-performed-by" required />
+                </label>
+                <label>
+                  Observations
+                  <textarea name="observations" placeholder="Optional notes"></textarea>
+                </label>
+                <div class="flex-row">
+                  <label>
+                    Duration (minutes)
+                    <input type="number" name="duration_minutes" min="0" />
+                  </label>
+                  <label>
+                    Follow up required
+                    <select name="follow_up_required">
+                      <option value="false" selected>No</option>
+                      <option value="true">Yes</option>
+                    </select>
+                  </label>
+                </div>
+                <button type="submit">Log maintenance</button>
+              </fieldset>
+            </form>
+          </section>
+
+          <section class="panel section tab-panel" id="shot-counters-section" data-tab-panel="shot-counters" role="tabpanel" aria-labelledby="tab-shot-counters" hidden>
+            <div class="section-header">
+              <div>
+                <h2>Shot counters</h2>
+                <p class="section-description">Capture production shot counts per tool.</p>
+              </div>
+              <button type="button" id="refresh-shot-counters">Refresh</button>
+            </div>
+
+            <div class="table-wrapper" id="shot-counters-table-wrapper"></div>
+
+            <form id="create-shot-counter-form">
+              <fieldset>
+                <legend>Add shot count</legend>
+                <label>
+                  Tool
+                  <select name="tool_id" id="shot-counter-tool" required></select>
+                </label>
+                <div class="flex-row">
+                  <label>
+                    Shots to add
+                    <input type="number" name="shot_increment" id="shot-counter-increment" min="1" placeholder="e.g. 250" required />
+                  </label>
+                  <label>
+                    Recorded by (user id)
+                    <input type="text" name="recorded_by" id="shot-counter-recorded-by" />
+                  </label>
+                </div>
+                <label>
+                  Source
+                  <select name="source">
+                    <option value="manual">Manual</option>
+                    <option value="automatic">Automatic</option>
+                    <option value="imported">Imported</option>
+                  </select>
+                </label>
+                <div class="shot-counter-preview" aria-live="polite">
+                  <p><strong>Current total:</strong> <span id="shot-counter-current-total">0</span></p>
+                  <p><strong>Projected total:</strong> <span id="shot-counter-projected-total">0</span></p>
+                  <p id="shot-counter-limit" class="muted"></p>
+                </div>
+                <button type="submit">Create entry</button>
+              </fieldset>
+            </form>
+          </section>
+
+          <section class="panel section tab-panel" id="failure-codes-section" data-tab-panel="failure-codes" role="tabpanel" aria-labelledby="tab-failure-codes" hidden>
+            <div class="section-header">
+              <div>
+                <h2>Failure codes</h2>
+                <p class="section-description">Standardised failure references.</p>
+              </div>
+              <button type="button" id="refresh-failure-codes">Refresh</button>
+            </div>
+
+            <div class="table-wrapper" id="failure-codes-table-wrapper"></div>
+
+            <form id="create-failure-code-form">
+              <fieldset>
+                <legend>Define failure code</legend>
+                <div class="flex-row">
+                  <label>
+                    Code
+                    <input type="text" name="code" required />
+                  </label>
+                  <label>
+                    Name
+                    <input type="text" name="name" required />
+                  </label>
+                </div>
+                <label>
+                  Description
+                  <textarea name="description"></textarea>
+                </label>
+                <label>
+                  Default severity
+                  <select name="severity_default">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </label>
+                <label>
+                  Active
+                  <select name="active">
+                    <option value="true" selected>Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </label>
+                <button type="submit">Create failure code</button>
+              </fieldset>
+            </form>
+          </section>
+
+          <section class="panel section tab-panel" id="failure-reports-section" data-tab-panel="failure-reports" role="tabpanel" aria-labelledby="tab-failure-reports" hidden>
+            <div class="section-header">
+              <div>
+                <h2>Failure reports</h2>
+                <p class="section-description">Document production failures and containment actions.</p>
+              </div>
+              <button type="button" id="refresh-failure-reports">Refresh</button>
+            </div>
+
+            <div class="table-wrapper" id="failure-reports-table-wrapper"></div>
+
+            <form id="create-failure-report-form">
+              <fieldset>
+                <legend>Report failure</legend>
+                <label>
+                  Tool
+                  <select name="tool_id" id="failure-report-tool" required></select>
+                </label>
+                <label>
+                  Reported by (user id)
+                  <input type="text" name="reported_by" id="failure-report-reported-by" required />
+                </label>
+                <label>
+                  Failure code
+                  <select name="failure_code_id" id="failure-report-code">
+                    <option value="">None</option>
+                  </select>
+                </label>
+                <label>
+                  Severity
+                  <select name="severity">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </label>
+                <label>
+                  Description
+                  <textarea name="description"></textarea>
+                </label>
+                <label>
+                  Containment action
+                  <textarea name="containment_action"></textarea>
+                </label>
+                <button type="submit">Submit report</button>
+              </fieldset>
+            </form>
+          </section>
+
+          <section class="panel section tab-panel" id="actions-section" data-tab-panel="actions" role="tabpanel" aria-labelledby="tab-actions" hidden>
+            <div class="section-header">
+              <div>
+                <h2>Action items</h2>
+                <p class="section-description">Assign corrective and improvement work.</p>
+              </div>
+              <button type="button" id="refresh-actions">Refresh</button>
+            </div>
+
+            <div class="table-wrapper" id="actions-table-wrapper"></div>
+
+            <form id="create-action-form">
+              <fieldset>
+                <legend>Create action item</legend>
+                <label>
+                  Tool
+                  <select name="tool_id" id="action-tool" required></select>
+                </label>
+                <label>
+                  Failure report (optional)
+                  <select name="failure_report_id" id="action-failure-report">
+                    <option value="">None</option>
+                  </select>
+                </label>
+                <label>
+                  Title
+                  <input type="text" name="title" required />
+                </label>
+                <label>
+                  Description
+                  <textarea name="description"></textarea>
+                </label>
+                <div class="flex-row">
+                  <label>
+                    Assigned to (user id)
+                    <input type="text" name="assigned_to" id="action-assigned-to" required />
+                  </label>
+                  <label>
+                    Due date
+                    <input type="date" name="due_date" />
+                  </label>
+                </div>
+                <label>
+                  Status
+                  <select name="status">
+                    <option value="open" selected>Open</option>
+                    <option value="in_progress">In progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </label>
+                <button type="submit">Create action</button>
+              </fieldset>
+            </form>
+          </section>
         </div>
-        <div class="feature">
-          <h3>Track Failures</h3>
-          <p>Log incidents, root causes, and corrective actions to reduce downtime.</p>
-        </div>
-        <div class="feature">
-          <h3>Monitor Performance</h3>
-          <p>Visualise usage trends and shot counters to anticipate issues early.</p>
-        </div>
-      </section>
-      <footer>Powered by the Tool Maintenance API</footer>
-    </main>
+      </main>
+    </div>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="/static/app.js"></script>
   </body>
 </html>
