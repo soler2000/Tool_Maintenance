@@ -54,24 +54,80 @@ core workflows described in the foundational documentation. Key capabilities inc
 
 ### Local Development
 
-1. Ensure Python 3.11+ is installed.
-2. Install dependencies using the provided `pyproject.toml`:
+Follow the steps below to bring the FastAPI backend up on a development workstation or a
+Raspberry Pi running Raspberry Pi OS (Debian Bookworm). The commands assume a Unix-like
+shell (Linux/macOS). On Windows, run the same commands inside PowerShell with the
+`python`/`pip` executables that ship with your Python 3.11 installation.
+
+1. **Install system packages**
+
+   Raspberry Pi OS Bookworm already ships Python 3.11 as its default interpreter, so the
+   generic packages are sufficient:
+
+   ```bash
+   sudo apt-get update
+   sudo apt-get install -y git python3 python3-venv python3-pip
+   ```
+
+   On other Debian/Ubuntu hosts you can replace `python3` with `python3.11` if that
+   package is available; otherwise the generic packages still deliver Python 3.11.
+
+2. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd Tool_Maintenance
+   ```
+
+3. **Create and activate a virtual environment**
+
+   The backend’s dependencies include `uvicorn[standard]`, `SQLAlchemy`, and other
+   packages that should remain isolated from the system interpreter:
+
+   ```bash
+   python3 -m venv backend/.venv
+   source backend/.venv/bin/activate
+   ```
+
+   After activation your shell prompt should be prefixed with `(.venv)`.
+
+4. **Upgrade `pip` and install the backend package**
+
+   Run the editable install from the `backend` directory so the dependencies declared in
+   `backend/pyproject.toml` (including `uvicorn`) are pulled into the virtual environment.
 
    ```bash
    cd backend
-   pip install -e .
+   python -m pip install --upgrade pip
+   python -m pip install -e .
+   python -m pip show uvicorn  # optional sanity check
    ```
 
-3. Launch the API with Uvicorn:
+   If the installer ever reports `does not appear to be a Python project`, double-check
+   that the command was executed from inside the `backend` folder or uses the explicit
+   `python -m pip install -e ./backend` path from the repository root.
+
+5. **Run the development server**
+
+   With the virtual environment still active, start Uvicorn via the module entry point.
+   Using `python -m uvicorn` ensures the interpreter finds the dependency inside the
+   virtual environment even if the console script is not on `PATH`.
 
    ```bash
-   uvicorn app.main:app --reload --port 6000
+   python -m uvicorn app.main:app --reload --port 6000
    ```
 
-4. Access the interactive API docs at `http://127.0.0.1:6000/docs`.
+6. **Open the interactive API documentation**
 
-Environment variables (see `backend/app/config.py`) can be defined in a `.env` file to
-override defaults such as the database connection string, JWT secret, and CORS settings.
+   Visit `http://127.0.0.1:6000/docs` once Uvicorn reports that it is running. The Swagger
+   UI exposes user registration, authentication, and the full set of CRUD endpoints for
+   tools, shot counters, maintenance logs, failures, and action items.
+
+7. **(Optional) Configure environment overrides**
+
+   Environment variables (see `backend/app/config.py`) can be defined in a `.env` file to
+   override defaults such as the database connection string, JWT secret, and CORS
+   settings. Create `backend/.env` and export variables in `KEY=value` format when needed.
 
 ## Next Steps
 1. Extend the backend with background workers for scheduled maintenance reminders and reporting.
