@@ -356,6 +356,11 @@ legend {
   gap: 12px;
 }
 
+.tab-panels {
+  display: grid;
+  gap: 24px;
+}
+
 .tab-button {
   background: rgba(30, 41, 59, 0.72);
   border: 1px solid rgba(148, 163, 184, 0.28);
@@ -378,6 +383,8 @@ legend {
 }
 
 .tab-panel {
+  display: grid;
+  gap: 16px;
   scroll-margin-top: 96px;
 }
 

@@ -172,7 +172,7 @@
             </form>
           </section>
 
-          <section class="panel section" id="records-tabs">
+          <section class="panel section" id="records-section">
             <div class="tabs" id="records-tablist" role="tablist" aria-label="Maintenance and production records">
               <button
                 type="button"
@@ -222,104 +222,226 @@
                 Action items
               </button>
             </div>
-          </section>
 
-          <section
-            class="panel section tab-panel"
-            id="maintenance-section"
-            role="tabpanel"
-            aria-labelledby="tab-maintenance"
-            data-tab-section="maintenance"
-          >
-            <div class="section-header">
-              <div>
-                <h2>Maintenance logs</h2>
-                <p class="section-description">Track completed maintenance activities.</p>
-              </div>
-              <button type="button" id="refresh-maintenance">Refresh</button>
-            </div>
-
-            <div class="table-wrapper" id="maintenance-table-wrapper"></div>
-
-            <form id="create-maintenance-form">
-              <fieldset>
-                <legend>Record maintenance</legend>
-                <label>
-                  Tool
-                  <select name="tool_id" id="maintenance-tool" required></select>
-                </label>
-                <label>
-                  Performed by (user id)
-                  <input type="text" name="performed_by" id="maintenance-performed-by" required />
-                </label>
-                <label>
-                  Observations
-                  <textarea name="observations" placeholder="Optional notes"></textarea>
-                </label>
-                <div class="flex-row">
-                  <label>
-                    Duration (minutes)
-                    <input type="number" name="duration_minutes" min="0" />
-                  </label>
-                  <label>
-                    Follow up required
-                    <select name="follow_up_required">
-                      <option value="false" selected>No</option>
-                      <option value="true">Yes</option>
-                    </select>
-                  </label>
+            <div class="tab-panels">
+              <section
+                class="tab-panel"
+                id="maintenance-section"
+                role="tabpanel"
+                aria-labelledby="tab-maintenance"
+                data-tab-section="maintenance"
+              >
+                <div class="section-header">
+                  <div>
+                    <h2>Maintenance logs</h2>
+                    <p class="section-description">Track completed maintenance activities.</p>
+                  </div>
+                  <button type="button" id="refresh-maintenance">Refresh</button>
                 </div>
-                <button type="submit">Log maintenance</button>
-              </fieldset>
-            </form>
-          </section>
 
-          <section
-            class="panel section tab-panel"
-            id="shot-counters-section"
-            role="tabpanel"
-            aria-labelledby="tab-shot-counters"
-            data-tab-section="shotCounters"
-            hidden
-          >
-            <div class="section-header">
-              <div>
-                <h2>Shot counters</h2>
-                <p class="section-description">Capture production shot counts per tool.</p>
-              </div>
-              <button type="button" id="refresh-shot-counters">Refresh</button>
-            </div>
+                <div class="table-wrapper" id="maintenance-table-wrapper"></div>
 
-            <div class="table-wrapper" id="shot-counters-table-wrapper"></div>
+                <form id="create-maintenance-form">
+                  <fieldset>
+                    <legend>Record maintenance</legend>
+                    <label>
+                      Tool
+                      <select name="tool_id" id="maintenance-tool" required></select>
+                    </label>
+                    <label>
+                      Performed by (user id)
+                      <input type="text" name="performed_by" id="maintenance-performed-by" required />
+                    </label>
+                    <label>
+                      Observations
+                      <textarea name="observations" placeholder="Optional notes"></textarea>
+                    </label>
+                    <div class="flex-row">
+                      <label>
+                        Duration (minutes)
+                        <input type="number" name="duration_minutes" min="0" />
+                      </label>
+                      <label>
+                        Follow up required
+                        <select name="follow_up_required">
+                          <option value="false" selected>No</option>
+                          <option value="true">Yes</option>
+                        </select>
+                      </label>
+                    </div>
+                    <button type="submit">Log maintenance</button>
+                  </fieldset>
+                </form>
+              </section>
 
-            <form id="create-shot-counter-form">
-              <fieldset>
-                <legend>Add shot count</legend>
-                <label>
-                  Tool
-                  <select name="tool_id" id="shot-counter-tool" required></select>
-                </label>
-                <div class="flex-row">
-                  <label>
-                    Shot count
-                    <input type="number" name="shot_count" min="0" required />
-                  </label>
-                  <label>
-                    Recorded by (user id)
-                    <input type="text" name="recorded_by" id="shot-counter-recorded-by" />
-                  </label>
+              <section
+                class="tab-panel"
+                id="shot-counters-section"
+                role="tabpanel"
+                aria-labelledby="tab-shot-counters"
+                data-tab-section="shotCounters"
+                hidden
+              >
+                <div class="section-header">
+                  <div>
+                    <h2>Shot counters</h2>
+                    <p class="section-description">Capture production shot counts per tool.</p>
+                  </div>
+                  <button type="button" id="refresh-shot-counters">Refresh</button>
                 </div>
-                <label>
-                  Source
-                  <select name="source">
-                    <option value="manual">Manual</option>
-                    <option value="automatic">Automatic</option>
-                    <option value="imported">Imported</option>
-                  </select>
-                </label>
-                <button type="submit">Create entry</button>
-              </fieldset>
-            </form>
+
+                <div class="table-wrapper" id="shot-counters-table-wrapper"></div>
+
+                <form id="create-shot-counter-form">
+                  <fieldset>
+                    <legend>Add shot count</legend>
+                    <label>
+                      Tool
+                      <select name="tool_id" id="shot-counter-tool" required></select>
+                    </label>
+                    <div class="flex-row">
+                      <label>
+                        Shot count
+                        <input type="number" name="shot_count" min="0" required />
+                      </label>
+                      <label>
+                        Recorded by (user id)
+                        <input type="text" name="recorded_by" id="shot-counter-recorded-by" />
+                      </label>
+                    </div>
+                    <label>
+                      Source
+                      <select name="source">
+                        <option value="manual">Manual</option>
+                        <option value="automatic">Automatic</option>
+                        <option value="imported">Imported</option>
+                      </select>
+                    </label>
+                    <button type="submit">Create entry</button>
+                  </fieldset>
+                </form>
+              </section>
+
+              <section
+                class="tab-panel"
+                id="failure-reports-section"
+                role="tabpanel"
+                aria-labelledby="tab-failure-reports"
+                data-tab-section="failureReports"
+                hidden
+              >
+                <div class="section-header">
+                  <div>
+                    <h2>Failure reports</h2>
+                    <p class="section-description">Document production failures and containment actions.</p>
+                  </div>
+                  <button type="button" id="refresh-failure-reports">Refresh</button>
+                </div>
+
+                <div class="table-wrapper" id="failure-reports-table-wrapper"></div>
+
+                <form id="create-failure-report-form">
+                  <fieldset>
+                    <legend>Report failure</legend>
+                    <label>
+                      Tool
+                      <select name="tool_id" id="failure-report-tool" required></select>
+                    </label>
+                    <label>
+                      Reported by (user id)
+                      <input type="text" name="reported_by" id="failure-report-reported-by" required />
+                    </label>
+                    <label>
+                      Failure code
+                      <select name="failure_code_id" id="failure-report-code">
+                        <option value="">None</option>
+                      </select>
+                    </label>
+                    <label>
+                      Severity
+                      <select name="severity">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                      </select>
+                    </label>
+                    <label>
+                      Description
+                      <textarea name="description"></textarea>
+                    </label>
+                    <label>
+                      Containment action
+                      <textarea name="containment_action"></textarea>
+                    </label>
+                    <button type="submit">Submit report</button>
+                  </fieldset>
+                </form>
+              </section>
+
+              <section
+                class="tab-panel"
+                id="actions-section"
+                role="tabpanel"
+                aria-labelledby="tab-action-items"
+                data-tab-section="actions"
+                hidden
+              >
+                <div class="section-header">
+                  <div>
+                    <h2>Action items</h2>
+                    <p class="section-description">Assign corrective and improvement work.</p>
+                  </div>
+                  <button type="button" id="refresh-actions">Refresh</button>
+                </div>
+
+                <div class="table-wrapper" id="actions-table-wrapper"></div>
+
+                <form id="create-action-form">
+                  <fieldset>
+                    <legend>Create action item</legend>
+                    <label>
+                      Tool
+                      <select name="tool_id" id="action-tool" required></select>
+                    </label>
+                    <label>
+                      Failure report (optional)
+                      <select name="failure_report_id" id="action-failure-report">
+                        <option value="">None</option>
+                      </select>
+                    </label>
+                    <label>
+                      Title
+                      <input type="text" name="title" required />
+                    </label>
+                    <label>
+                      Description
+                      <textarea name="description"></textarea>
+                    </label>
+                    <div class="flex-row">
+                      <label>
+                        Assigned to (user id)
+                        <input type="text" name="assigned_to" id="action-assigned-to" required />
+                      </label>
+                      <label>
+                        Due date
+                        <input type="date" name="due_date" />
+                      </label>
+                    </div>
+                    <label>
+                      Status
+                      <select name="status">
+                        <option value="open" selected>Open</option>
+                        <option value="in_progress">In progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </label>
+                    <button type="submit">Create action</button>
+                  </fieldset>
+                </form>
+              </section>
+            </div>
           </section>
 
           <section class="panel section" id="failure-codes-section">
@@ -371,125 +493,6 @@
             </form>
           </section>
 
-          <section
-            class="panel section tab-panel"
-            id="failure-reports-section"
-            role="tabpanel"
-            aria-labelledby="tab-failure-reports"
-            data-tab-section="failureReports"
-            hidden
-          >
-            <div class="section-header">
-              <div>
-                <h2>Failure reports</h2>
-                <p class="section-description">Document production failures and containment actions.</p>
-              </div>
-              <button type="button" id="refresh-failure-reports">Refresh</button>
-            </div>
-
-            <div class="table-wrapper" id="failure-reports-table-wrapper"></div>
-
-            <form id="create-failure-report-form">
-              <fieldset>
-                <legend>Report failure</legend>
-                <label>
-                  Tool
-                  <select name="tool_id" id="failure-report-tool" required></select>
-                </label>
-                <label>
-                  Reported by (user id)
-                  <input type="text" name="reported_by" id="failure-report-reported-by" required />
-                </label>
-                <label>
-                  Failure code
-                  <select name="failure_code_id" id="failure-report-code">
-                    <option value="">None</option>
-                  </select>
-                </label>
-                <label>
-                  Severity
-                  <select name="severity">
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
-                    <option value="critical">Critical</option>
-                  </select>
-                </label>
-                <label>
-                  Description
-                  <textarea name="description"></textarea>
-                </label>
-                <label>
-                  Containment action
-                  <textarea name="containment_action"></textarea>
-                </label>
-                <button type="submit">Submit report</button>
-              </fieldset>
-            </form>
-          </section>
-
-          <section
-            class="panel section tab-panel"
-            id="actions-section"
-            role="tabpanel"
-            aria-labelledby="tab-action-items"
-            data-tab-section="actions"
-            hidden
-          >
-            <div class="section-header">
-              <div>
-                <h2>Action items</h2>
-                <p class="section-description">Assign corrective and improvement work.</p>
-              </div>
-              <button type="button" id="refresh-actions">Refresh</button>
-            </div>
-
-            <div class="table-wrapper" id="actions-table-wrapper"></div>
-
-            <form id="create-action-form">
-              <fieldset>
-                <legend>Create action item</legend>
-                <label>
-                  Tool
-                  <select name="tool_id" id="action-tool" required></select>
-                </label>
-                <label>
-                  Failure report (optional)
-                  <select name="failure_report_id" id="action-failure-report">
-                    <option value="">None</option>
-                  </select>
-                </label>
-                <label>
-                  Title
-                  <input type="text" name="title" required />
-                </label>
-                <label>
-                  Description
-                  <textarea name="description"></textarea>
-                </label>
-                <div class="flex-row">
-                  <label>
-                    Assigned to (user id)
-                    <input type="text" name="assigned_to" id="action-assigned-to" required />
-                  </label>
-                  <label>
-                    Due date
-                    <input type="date" name="due_date" />
-                  </label>
-                </div>
-                <label>
-                  Status
-                  <select name="status">
-                    <option value="open" selected>Open</option>
-                    <option value="in_progress">In progress</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
-                </label>
-                <button type="submit">Create action</button>
-              </fieldset>
-            </form>
-          </section>
         </div>
       </main>
     </div>
