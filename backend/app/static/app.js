@@ -1,10 +1,13 @@
 const API_BASE = "/api";
 
+const TAB_KEYS = ["maintenance", "shotCounters", "failureReports", "actions"];
+
 const state = {
   token: localStorage.getItem("tm_auth_token") || "",
   username: localStorage.getItem("tm_username") || "",
   defaultUserId: localStorage.getItem("tm_user_id") || "",
   loading: false,
+  activeTab: localStorage.getItem("tm_active_tab") || TAB_KEYS[0],
   data: {
     tools: [],
     maintenanceLogs: [],
@@ -37,6 +40,8 @@ const elements = {
   actionTool: document.getElementById("action-tool"),
   actionFailureReport: document.getElementById("action-failure-report"),
   toast: document.getElementById("toast"),
+  tabButtons: Array.from(document.querySelectorAll("[data-tab-target]")),
+  tabSections: Array.from(document.querySelectorAll("[data-tab-section]")),
   toolTableWrapper: document.getElementById("tools-table-wrapper"),
   maintenanceTableWrapper: document.getElementById("maintenance-table-wrapper"),
   shotCounterTableWrapper: document.getElementById("shot-counters-table-wrapper"),
@@ -80,6 +85,13 @@ function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString();
+}
+
+function formatNumber(value) {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "-";
+  }
+  return value.toLocaleString();
 }
 
 async function api(path, options = {}) {
@@ -188,15 +200,55 @@ function renderEmptyState(message) {
   return `<div class="empty-state">${message}</div>`;
 }
 
+function setActiveTab(tabKey) {
+  const targetKey = TAB_KEYS.includes(tabKey) ? tabKey : TAB_KEYS[0];
+  state.activeTab = targetKey;
+  localStorage.setItem("tm_active_tab", targetKey);
+
+  elements.tabButtons.forEach((button) => {
+    const isActive = button.dataset.tabTarget === targetKey;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", isActive ? "true" : "false");
+    if (isActive) {
+      button.removeAttribute("tabindex");
+    } else {
+      button.setAttribute("tabindex", "-1");
+    }
+  });
+
+  elements.tabSections.forEach((section) => {
+    const isActive = section.dataset.tabSection === targetKey;
+    section.hidden = !isActive;
+    if (isActive) {
+      section.setAttribute("tabindex", "0");
+    } else {
+      section.removeAttribute("tabindex");
+    }
+  });
+}
+
 function renderTools() {
   const tools = state.data.tools;
   if (!tools.length) {
     elements.toolTableWrapper.innerHTML = renderEmptyState("No tools have been recorded yet.");
     return;
   }
+  const shotTotals = new Map();
+  state.data.shotCounters.forEach((entry) => {
+    shotTotals.set(entry.tool_id, (shotTotals.get(entry.tool_id) ?? 0) + entry.shot_count);
+  });
   const rows = tools
     .map((tool) => {
       const statusClass = `status-${tool.status}`;
+      const maxShots = typeof tool.max_shot_count === "number" ? tool.max_shot_count : null;
+      const counterTotal = shotTotals.get(tool.id) ?? 0;
+      const totalShots = Math.max(tool.current_shot_count, tool.initial_shot_count + counterTotal);
+      const isOverLimit = maxShots !== null && totalShots > maxShots;
+      const currentShots = formatNumber(totalShots);
+      const currentShotsCell = `
+        <span class="shot-total${isOverLimit ? " over-limit" : ""}">${currentShots}</span>
+        ${isOverLimit ? '<span class="badge badge-negative">Over limit</span>' : ""}
+      `.trim();
       return `
         <tr>
           <td><code>${tool.asset_number}</code></td>
@@ -209,6 +261,9 @@ function renderTools() {
             </span>
           </td>
           <td>${tool.cavity_count ?? "-"}</td>
+          <td>${formatNumber(tool.initial_shot_count)}</td>
+          <td>${currentShotsCell}</td>
+          <td>${maxShots !== null ? formatNumber(maxShots) : "-"}</td>
           <td>${formatDateTime(tool.created_at)}</td>
         </tr>
       `;
@@ -223,6 +278,9 @@ function renderTools() {
           <th>Location</th>
           <th>Status</th>
           <th>Cavities</th>
+          <th>Initial shots</th>
+          <th>Current shots</th>
+          <th>Max shots</th>
           <th>Created</th>
         </tr>
       </thead>
@@ -267,28 +325,57 @@ function renderMaintenance() {
 }
 
 function renderShotCounters() {
-  const counters = state.data.shotCounters;
+  const counters = [...state.data.shotCounters];
   if (!counters.length) {
     elements.shotCounterTableWrapper.innerHTML = renderEmptyState("No shot counters recorded.");
     return;
   }
+  counters.sort((a, b) => {
+    const timeA = new Date(a.recorded_at ?? 0).getTime();
+    const timeB = new Date(b.recorded_at ?? 0).getTime();
+    return timeA - timeB;
+  });
+
+  const runningTotals = new Map();
+  const toolIndex = new Map(state.data.tools.map((tool) => [tool.id, tool]));
+
   const rows = counters
-    .map((entry) => `
-      <tr>
-        <td><code>${entry.tool_id}</code></td>
-        <td>${entry.shot_count}</td>
-        <td>${entry.source}</td>
-        <td><code>${entry.recorded_by || "-"}</code></td>
-        <td>${formatDateTime(entry.recorded_at)}</td>
-      </tr>
-    `)
+    .map((entry) => {
+      const tool = toolIndex.get(entry.tool_id);
+      const startingValue = runningTotals.has(entry.tool_id)
+        ? runningTotals.get(entry.tool_id)
+        : tool?.initial_shot_count ?? 0;
+      const newTotal = startingValue + entry.shot_count;
+      runningTotals.set(entry.tool_id, newTotal);
+
+      const maxShots = typeof tool?.max_shot_count === "number" ? tool.max_shot_count : null;
+      const isOverLimit = maxShots !== null && newTotal > maxShots;
+      const totalCell = `
+        <span class="shot-total${isOverLimit ? " over-limit" : ""}">${formatNumber(newTotal)}</span>
+        ${isOverLimit ? '<span class="badge badge-negative">Over limit</span>' : ""}
+      `.trim();
+
+      return `
+        <tr>
+          <td><code>${entry.tool_id}</code></td>
+          <td>${formatNumber(entry.shot_count)}</td>
+          <td>${totalCell}</td>
+          <td>${maxShots !== null ? formatNumber(maxShots) : "-"}</td>
+          <td>${entry.source}</td>
+          <td><code>${entry.recorded_by || "-"}</code></td>
+          <td>${formatDateTime(entry.recorded_at)}</td>
+        </tr>
+      `;
+    })
     .join("");
   elements.shotCounterTableWrapper.innerHTML = `
     <table>
       <thead>
         <tr>
           <th>Tool id</th>
-          <th>Shots</th>
+          <th>Shots added</th>
+          <th>Total shots</th>
+          <th>Max shots</th>
           <th>Source</th>
           <th>Recorded by</th>
           <th>Recorded at</th>
@@ -480,7 +567,18 @@ function sanitisePayload(payload) {
       cleaned[key] = true;
     } else if (value === "false") {
       cleaned[key] = false;
-    } else if (!Number.isNaN(Number(value)) && value.trim() !== "" && ["cavity_count", "duration_minutes", "shot_count"].includes(key)) {
+    } else if (
+      !Number.isNaN(Number(value)) &&
+      value.trim() !== "" &&
+      [
+        "cavity_count",
+        "duration_minutes",
+        "shot_count",
+        "initial_shot_count",
+        "max_shot_count",
+        "current_shot_count",
+      ].includes(key)
+    ) {
       cleaned[key] = Number(value);
     } else {
       cleaned[key] = value;
@@ -490,6 +588,13 @@ function sanitisePayload(payload) {
 }
 
 function attachEventListeners() {
+  elements.tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const { tabTarget } = button.dataset;
+      setActiveTab(tabTarget);
+    });
+  });
+
   elements.loginForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const payload = formDataToObject(elements.loginForm);
@@ -666,6 +771,7 @@ function attachEventListeners() {
 }
 
 attachEventListeners();
+setActiveTab(state.activeTab);
 updateAuthState();
 if (state.token) {
   void loadDashboard();

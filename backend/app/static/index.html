@@ -157,12 +157,80 @@
                     <input type="text" name="location" />
                   </label>
                 </div>
+                <div class="flex-row">
+                  <label>
+                    Initial shot count
+                    <input type="number" name="initial_shot_count" min="0" value="0" />
+                  </label>
+                  <label>
+                    Maximum shot count
+                    <input type="number" name="max_shot_count" min="0" />
+                  </label>
+                </div>
                 <button type="submit">Create tool</button>
               </fieldset>
             </form>
           </section>
 
-          <section class="panel section" id="maintenance-section">
+          <section class="panel section" id="records-tabs">
+            <div class="tabs" id="records-tablist" role="tablist" aria-label="Maintenance and production records">
+              <button
+                type="button"
+                class="tab-button"
+                id="tab-maintenance"
+                role="tab"
+                aria-selected="true"
+                aria-controls="maintenance-section"
+                data-tab-target="maintenance"
+              >
+                Maintenance logs
+              </button>
+              <button
+                type="button"
+                class="tab-button"
+                id="tab-shot-counters"
+                role="tab"
+                aria-selected="false"
+                tabindex="-1"
+                aria-controls="shot-counters-section"
+                data-tab-target="shotCounters"
+              >
+                Shot counters
+              </button>
+              <button
+                type="button"
+                class="tab-button"
+                id="tab-failure-reports"
+                role="tab"
+                aria-selected="false"
+                tabindex="-1"
+                aria-controls="failure-reports-section"
+                data-tab-target="failureReports"
+              >
+                Failure reports
+              </button>
+              <button
+                type="button"
+                class="tab-button"
+                id="tab-action-items"
+                role="tab"
+                aria-selected="false"
+                tabindex="-1"
+                aria-controls="actions-section"
+                data-tab-target="actions"
+              >
+                Action items
+              </button>
+            </div>
+          </section>
+
+          <section
+            class="panel section tab-panel"
+            id="maintenance-section"
+            role="tabpanel"
+            aria-labelledby="tab-maintenance"
+            data-tab-section="maintenance"
+          >
             <div class="section-header">
               <div>
                 <h2>Maintenance logs</h2>
@@ -206,7 +274,14 @@
             </form>
           </section>
 
-          <section class="panel section" id="shot-counters-section">
+          <section
+            class="panel section tab-panel"
+            id="shot-counters-section"
+            role="tabpanel"
+            aria-labelledby="tab-shot-counters"
+            data-tab-section="shotCounters"
+            hidden
+          >
             <div class="section-header">
               <div>
                 <h2>Shot counters</h2>
@@ -296,7 +371,14 @@
             </form>
           </section>
 
-          <section class="panel section" id="failure-reports-section">
+          <section
+            class="panel section tab-panel"
+            id="failure-reports-section"
+            role="tabpanel"
+            aria-labelledby="tab-failure-reports"
+            data-tab-section="failureReports"
+            hidden
+          >
             <div class="section-header">
               <div>
                 <h2>Failure reports</h2>
@@ -346,7 +428,14 @@
             </form>
           </section>
 
-          <section class="panel section" id="actions-section">
+          <section
+            class="panel section tab-panel"
+            id="actions-section"
+            role="tabpanel"
+            aria-labelledby="tab-action-items"
+            data-tab-section="actions"
+            hidden
+          >
             <div class="section-header">
               <div>
                 <h2>Action items</h2>
