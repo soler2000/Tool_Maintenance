@@ -2,7 +2,8 @@
 from functools import lru_cache
 from typing import Optional
 
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -18,9 +19,7 @@ class Settings(BaseSettings):
     api_port: int = Field(6000, description="Port the HTTP server listens on by default.")
     debug: bool = Field(False, description="Enable debug mode.")
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 @lru_cache
