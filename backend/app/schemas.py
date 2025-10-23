@@ -41,6 +41,8 @@ class ToolBase(APIModel):
     cavity_count: Optional[int]
     status: ToolStatus = ToolStatus.active
     location: Optional[str]
+    initial_shot_count: int = 0
+    max_shot_count: Optional[int]
 
 
 class ToolCreate(ToolBase):
@@ -54,12 +56,16 @@ class ToolUpdate(APIModel):
     cavity_count: Optional[int]
     status: Optional[ToolStatus]
     location: Optional[str]
+    initial_shot_count: Optional[int]
+    max_shot_count: Optional[int]
+    current_shot_count: Optional[int]
 
 
 class ToolRead(ToolBase):
     id: str
     created_at: datetime
     updated_at: datetime
+    current_shot_count: int
 
 
 class ToolShotCounterBase(APIModel):
@@ -76,6 +82,7 @@ class ToolShotCounterCreate(ToolShotCounterBase):
 class ToolShotCounterRead(ToolShotCounterBase):
     id: str
     tool_id: str
+    recorded_at: datetime
 
 
 class MaintenanceLogBase(APIModel):

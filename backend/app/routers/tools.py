@@ -21,7 +21,9 @@ async def list_tools(session: AsyncSession = Depends(get_session)) -> list[schem
 
 @router.post("", response_model=schemas.ToolRead, status_code=status.HTTP_201_CREATED)
 async def create_tool(payload: schemas.ToolCreate, session: AsyncSession = Depends(get_session)) -> schemas.ToolRead:
-    tool = models.Tool(**payload.dict())
+    data = payload.dict()
+    tool = models.Tool(**data)
+    tool.current_shot_count = tool.initial_shot_count
     tool = await create_instance(session, tool)
     return schemas.ToolRead.from_orm(tool)
 
