@@ -105,81 +105,26 @@
         </section>
 
         <div id="dashboard" hidden>
-          <section class="panel section" id="tools-section">
-            <div class="section-header">
-              <div>
-                <h2>Tools</h2>
-                <p class="section-description">Inventory of moulds and tooling assets.</p>
-              </div>
-              <button type="button" id="refresh-tools">Refresh</button>
-            </div>
-
-            <div class="table-wrapper" id="tools-table-wrapper"></div>
-
-            <form id="create-tool-form">
-              <fieldset>
-                <legend>Add new tool</legend>
-                <div class="flex-row">
-                  <label>
-                    Asset number
-                    <input type="text" name="asset_number" required />
-                  </label>
-                  <label>
-                    Name
-                    <input type="text" name="name" required />
-                  </label>
-                </div>
-                <label>
-                  Description
-                  <textarea name="description" placeholder="Optional"></textarea>
-                </label>
-                <div class="flex-row">
-                  <label>
-                    Manufacturer
-                    <input type="text" name="manufacturer" />
-                  </label>
-                  <label>
-                    Cavity count
-                    <input type="number" name="cavity_count" min="0" />
-                  </label>
-                </div>
-                <div class="flex-row">
-                  <label>
-                    Status
-                    <select name="status">
-                      <option value="active">Active</option>
-                      <option value="maintenance">Maintenance</option>
-                      <option value="retired">Retired</option>
-                    </select>
-                  </label>
-                  <label>
-                    Location
-                    <input type="text" name="location" />
-                  </label>
-                </div>
-                <div class="flex-row">
-                  <label>
-                    Initial shot count
-                    <input type="number" name="initial_shot_count" min="0" value="0" />
-                  </label>
-                  <label>
-                    Maximum shot count
-                    <input type="number" name="max_shot_count" min="0" />
-                  </label>
-                </div>
-                <button type="submit">Create tool</button>
-              </fieldset>
-            </form>
-          </section>
-
           <section class="panel section" id="records-section">
-            <div class="tabs" id="records-tablist" role="tablist" aria-label="Maintenance and production records">
+            <div class="tabs" id="records-tablist" role="tablist" aria-label="Tool maintenance dashboard sections">
+              <button
+                type="button"
+                class="tab-button"
+                id="tab-tools"
+                role="tab"
+                aria-selected="true"
+                aria-controls="tools-section"
+                data-tab-target="tools"
+              >
+                Tools
+              </button>
               <button
                 type="button"
                 class="tab-button"
                 id="tab-maintenance"
                 role="tab"
-                aria-selected="true"
+                aria-selected="false"
+                tabindex="-1"
                 aria-controls="maintenance-section"
                 data-tab-target="maintenance"
               >
@@ -226,10 +171,84 @@
             <div class="tab-panels">
               <section
                 class="tab-panel"
+                id="tools-section"
+                role="tabpanel"
+                aria-labelledby="tab-tools"
+                data-tab-section="tools"
+              >
+                <div class="section-header">
+                  <div>
+                    <h2>Tools</h2>
+                    <p class="section-description">Inventory of moulds and tooling assets.</p>
+                  </div>
+                  <button type="button" id="refresh-tools">Refresh</button>
+                </div>
+
+                <div class="table-wrapper" id="tools-table-wrapper"></div>
+
+                <form id="create-tool-form">
+                  <fieldset>
+                    <legend>Add new tool</legend>
+                    <div class="flex-row">
+                      <label>
+                        Asset number
+                        <input type="text" name="asset_number" required />
+                      </label>
+                      <label>
+                        Name
+                        <input type="text" name="name" required />
+                      </label>
+                    </div>
+                    <label>
+                      Description
+                      <textarea name="description" placeholder="Optional"></textarea>
+                    </label>
+                    <div class="flex-row">
+                      <label>
+                        Manufacturer
+                        <input type="text" name="manufacturer" />
+                      </label>
+                      <label>
+                        Cavity count
+                        <input type="number" name="cavity_count" min="0" />
+                      </label>
+                    </div>
+                    <div class="flex-row">
+                      <label>
+                        Status
+                        <select name="status">
+                          <option value="active">Active</option>
+                          <option value="maintenance">Maintenance</option>
+                          <option value="retired">Retired</option>
+                        </select>
+                      </label>
+                      <label>
+                        Location
+                        <input type="text" name="location" />
+                      </label>
+                    </div>
+                    <div class="flex-row">
+                      <label>
+                        Initial shot count
+                        <input type="number" name="initial_shot_count" min="0" value="0" />
+                      </label>
+                      <label>
+                        Maximum shot count
+                        <input type="number" name="max_shot_count" min="0" />
+                      </label>
+                    </div>
+                    <button type="submit">Create tool</button>
+                  </fieldset>
+                </form>
+              </section>
+
+              <section
+                class="tab-panel"
                 id="maintenance-section"
                 role="tabpanel"
                 aria-labelledby="tab-maintenance"
                 data-tab-section="maintenance"
+                hidden
               >
                 <div class="section-header">
                   <div>
