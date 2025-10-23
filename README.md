@@ -91,10 +91,11 @@ shell (Linux/macOS). On Windows, run the same commands inside PowerShell with th
 
    After activation your shell prompt should be prefixed with `(.venv)`.
 
-4. **Upgrade `pip` and install the backend package**
+4. **Upgrade `pip` and install the backend dependencies**
 
    Run the editable install from the `backend` directory so the dependencies declared in
-   `backend/pyproject.toml` (including `uvicorn`) are pulled into the virtual environment.
+   `backend/pyproject.toml` (including `uvicorn` and `fastapi`) are pulled into the virtual
+   environment.
 
    ```bash
    cd backend
@@ -106,6 +107,14 @@ shell (Linux/macOS). On Windows, run the same commands inside PowerShell with th
    If the installer ever reports `does not appear to be a Python project`, double-check
    that the command was executed from inside the `backend` folder or uses the explicit
    `python -m pip install -e ./backend` path from the repository root.
+
+   As an alternative workflow (or when running on constrained systems where editable
+   installs are undesirable), you can install the same dependency set with the provided
+   requirements file:
+
+   ```bash
+   python -m pip install -r backend/requirements.txt
+   ```
 
 5. **Run the development server**
 
