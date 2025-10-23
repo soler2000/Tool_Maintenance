@@ -3,8 +3,9 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from .config import get_settings
 from .database import init_models
@@ -41,9 +42,18 @@ def create_app() -> FastAPI:
     application.include_router(failures.router, prefix=api_prefix)
     application.include_router(actions.router, prefix=api_prefix)
 
-    @application.get("/")
-    async def root() -> dict[str, str]:
-        return {"service": settings.app_name, "status": "ok"}
+    @application.get("/", include_in_schema=False)
+    async def root() -> RedirectResponse:
+        """Redirect browsers hitting the service root to the interactive docs."""
+
+        return RedirectResponse(url="/docs", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
+    @application.get("/health", include_in_schema=False)
+    async def healthcheck() -> JSONResponse:
+        """Expose a lightweight JSON healthcheck for automation tooling."""
+
+        payload = {"service": settings.app_name, "status": "ok"}
+        return JSONResponse(content=payload)
 
     return application
 
