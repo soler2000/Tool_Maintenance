@@ -4,6 +4,8 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+from sqlalchemy import inspect, text
+from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
@@ -41,6 +43,25 @@ async def init_models() -> None:
 
     async with _engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(_apply_schema_backfills)
+
+
+def _apply_schema_backfills(connection: Connection) -> None:
+    """Add any missing columns required by recent releases."""
+
+    if connection.dialect.name != "sqlite":
+        return
+
+    inspector = inspect(connection)
+    tool_columns = {column["name"] for column in inspector.get_columns("tools")}
+
+    if "initial_shot_count" not in tool_columns:
+        connection.execute(
+            text(
+                "ALTER TABLE tools "
+                "ADD COLUMN initial_shot_count INTEGER NOT NULL DEFAULT 0"
+            )
+        )
 
 
 __all__ = ["Base", "SessionLocal", "get_session", "init_models", "lifespan_session"]
