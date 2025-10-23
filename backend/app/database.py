@@ -71,5 +71,10 @@ def _apply_schema_backfills(connection: Connection) -> None:
             )
         )
 
+    if "max_shot_count" not in tool_columns:
+        connection.execute(
+            text("ALTER TABLE tools ADD COLUMN max_shot_count INTEGER")
+        )
+
 
 __all__ = ["Base", "SessionLocal", "get_session", "init_models", "lifespan_session"]
