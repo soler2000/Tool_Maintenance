@@ -1,6 +1,6 @@
 const API_BASE = "/api";
 
-const TAB_KEYS = ["maintenance", "shotCounters", "failureReports", "actions"];
+const TAB_KEYS = ["tools", "maintenance", "shotCounters", "failureReports", "actions"];
 
 const state = {
   token: localStorage.getItem("tm_auth_token") || "",
