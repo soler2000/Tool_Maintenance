@@ -122,7 +122,7 @@ Tool 1---* ActionItem *---1 User (assignee)
 | active | Boolean | |
 
 ## Audit & Integration Tables
-- **AuditLog:** Stores user actions (entity type, entity id, action, timestamp, metadata).
+- **AuditLog:** Stores user actions (entity type, entity id, action, timestamp, metadata JSON payload).
 - **IntegrationEvent:** Records inbound PLC/OPC-UA messages for shot counts with raw payload and processing status.
 
 ## File Storage Strategy
