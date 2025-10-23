@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from .config import get_settings
 from .database import init_models
@@ -26,6 +28,9 @@ def create_app() -> FastAPI:
     settings = get_settings()
     application = FastAPI(title=settings.app_name, debug=settings.debug, lifespan=lifespan)
 
+    static_directory = Path(__file__).resolve().parent / "static"
+    application.mount("/static", StaticFiles(directory=static_directory), name="static")
+
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -43,10 +48,10 @@ def create_app() -> FastAPI:
     application.include_router(actions.router, prefix=api_prefix)
 
     @application.get("/", include_in_schema=False)
-    async def root() -> RedirectResponse:
-        """Redirect browsers hitting the service root to the interactive docs."""
+    async def root() -> FileResponse:
+        """Serve a static landing page for the Tool Maintenance Portal."""
 
-        return RedirectResponse(url="/docs", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+        return FileResponse(static_directory / "index.html", media_type="text/html")
 
     @application.get("/health", include_in_schema=False)
     async def healthcheck() -> JSONResponse:
