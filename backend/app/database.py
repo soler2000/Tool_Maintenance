@@ -63,5 +63,13 @@ def _apply_schema_backfills(connection: Connection) -> None:
             )
         )
 
+    if "current_shot_count" not in tool_columns:
+        connection.execute(
+            text(
+                "ALTER TABLE tools "
+                "ADD COLUMN current_shot_count INTEGER NOT NULL DEFAULT 0"
+            )
+        )
+
 
 __all__ = ["Base", "SessionLocal", "get_session", "init_models", "lifespan_session"]
