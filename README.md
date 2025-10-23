@@ -123,14 +123,26 @@ shell (Linux/macOS). On Windows, run the same commands inside PowerShell with th
    virtual environment even if the console script is not on `PATH`.
 
    ```bash
-   python -m uvicorn app.main:app --reload --port 6000
+   python -m uvicorn app.main:app --reload --port 8000
    ```
+
+   When you want to reach the API from another device (for example, a laptop on the same
+   network as a Raspberry Pi), bind the server to all interfaces:
+
+   ```bash
+   python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+   After launch you can confirm the service is reachable locally with
+   `curl http://127.0.0.1:8000/health` before trying a remote browser.
 
 6. **Open the interactive API documentation**
 
-   Visit `http://127.0.0.1:6000/docs` once Uvicorn reports that it is running. The Swagger
-   UI exposes user registration, authentication, and the full set of CRUD endpoints for
-   tools, shot counters, maintenance logs, failures, and action items.
+   Visit `http://127.0.0.1:8000/docs` once Uvicorn reports that it is running. The Swagger UI exposes user
+   registration, authentication, and the full set of CRUD endpoints for tools, shot
+   counters, maintenance logs, failures, and action items. When serving the app for remote
+   browsers, browse to `http://<raspberry-pi-ip>:8000/docs` from another device on the same
+   network, substituting the Pi's IP address obtained via `ip addr`.
 
 7. **(Optional) Configure environment overrides**
 
