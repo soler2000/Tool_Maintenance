@@ -186,6 +186,65 @@
 
                 <div class="table-wrapper" id="tools-table-wrapper"></div>
 
+                <form id="update-tool-form">
+                  <fieldset>
+                    <legend>Update tool</legend>
+                    <label>
+                      Tool
+                      <select name="tool_id" id="update-tool-id" required></select>
+                    </label>
+                    <p class="form-note">Leave any field blank to keep the existing value.</p>
+                    <label>
+                      Name
+                      <input type="text" name="name" />
+                    </label>
+                    <label>
+                      Description
+                      <textarea name="description" placeholder="Optional"></textarea>
+                    </label>
+                    <div class="flex-row">
+                      <label>
+                        Manufacturer
+                        <input type="text" name="manufacturer" />
+                      </label>
+                      <label>
+                        Cavity count
+                        <input type="number" name="cavity_count" min="0" />
+                      </label>
+                    </div>
+                    <div class="flex-row">
+                      <label>
+                        Status
+                        <select name="status">
+                          <option value="">Keep current</option>
+                          <option value="active">Active</option>
+                          <option value="maintenance">Maintenance</option>
+                          <option value="retired">Retired</option>
+                        </select>
+                      </label>
+                      <label>
+                        Location
+                        <input type="text" name="location" />
+                      </label>
+                    </div>
+                    <div class="flex-row">
+                      <label>
+                        Initial shot count
+                        <input type="number" name="initial_shot_count" min="0" />
+                      </label>
+                      <label>
+                        Maximum shot count
+                        <input type="number" name="max_shot_count" min="0" />
+                      </label>
+                      <label>
+                        Current shot count
+                        <input type="number" name="current_shot_count" min="0" />
+                      </label>
+                    </div>
+                    <button type="submit">Save changes</button>
+                  </fieldset>
+                </form>
+
                 <form id="create-tool-form">
                   <fieldset>
                     <legend>Add new tool</legend>
@@ -260,6 +319,44 @@
 
                 <div class="table-wrapper" id="maintenance-table-wrapper"></div>
 
+                <form id="update-maintenance-form">
+                  <fieldset>
+                    <legend>Update maintenance log</legend>
+                    <label>
+                      Maintenance entry
+                      <select name="log_id" id="update-maintenance-id" required></select>
+                    </label>
+                    <p class="form-note">Only populate the fields you want to change.</p>
+                    <label>
+                      Tool
+                      <select name="tool_id" id="update-maintenance-tool"></select>
+                    </label>
+                    <label>
+                      Performed by (user id)
+                      <input type="text" name="performed_by" id="update-maintenance-performed-by" />
+                    </label>
+                    <label>
+                      Observations
+                      <textarea name="observations" placeholder="Optional notes"></textarea>
+                    </label>
+                    <div class="flex-row">
+                      <label>
+                        Duration (minutes)
+                        <input type="number" name="duration_minutes" min="0" />
+                      </label>
+                      <label>
+                        Follow up required
+                        <select name="follow_up_required">
+                          <option value="">Keep current</option>
+                          <option value="false">No</option>
+                          <option value="true">Yes</option>
+                        </select>
+                      </label>
+                    </div>
+                    <button type="submit">Save changes</button>
+                  </fieldset>
+                </form>
+
                 <form id="create-maintenance-form">
                   <fieldset>
                     <legend>Record maintenance</legend>
@@ -311,6 +408,41 @@
 
                 <div class="table-wrapper" id="shot-counters-table-wrapper"></div>
 
+                <form id="update-shot-counter-form">
+                  <fieldset>
+                    <legend>Update shot counter</legend>
+                    <label>
+                      Entry
+                      <select name="counter_id" id="update-shot-counter-id" required></select>
+                    </label>
+                    <p class="form-note">Leave values blank to keep them unchanged.</p>
+                    <div class="flex-row">
+                      <label>
+                        Shot count
+                        <input type="number" name="shot_count" min="0" />
+                      </label>
+                      <label>
+                        Recorded by (user id)
+                        <input type="text" name="recorded_by" id="update-shot-counter-recorded-by" />
+                      </label>
+                    </div>
+                    <label>
+                      Source
+                      <select name="source">
+                        <option value="">Keep current</option>
+                        <option value="manual">Manual</option>
+                        <option value="automatic">Automatic</option>
+                        <option value="imported">Imported</option>
+                      </select>
+                    </label>
+                    <label>
+                      Recorded at
+                      <input type="datetime-local" name="recorded_at" />
+                    </label>
+                    <button type="submit">Save changes</button>
+                  </fieldset>
+                </form>
+
                 <form id="create-shot-counter-form">
                   <fieldset>
                     <legend>Add shot count</legend>
@@ -358,6 +490,55 @@
                 </div>
 
                 <div class="table-wrapper" id="failure-reports-table-wrapper"></div>
+
+                <form id="update-failure-report-form">
+                  <fieldset>
+                    <legend>Update failure report</legend>
+                    <label>
+                      Report
+                      <select name="report_id" id="update-failure-report-id" required></select>
+                    </label>
+                    <p class="form-note">Select only the details that need to change.</p>
+                    <label>
+                      Tool
+                      <select name="tool_id" id="update-failure-report-tool"></select>
+                    </label>
+                    <label>
+                      Reported by (user id)
+                      <input type="text" name="reported_by" id="update-failure-report-reported-by" />
+                    </label>
+                    <label>
+                      Failure code
+                      <select name="failure_code_id" id="update-failure-report-code">
+                        <option value="">Keep current</option>
+                        <option value="__clear__">Remove code</option>
+                      </select>
+                    </label>
+                    <label>
+                      Severity
+                      <select name="severity">
+                        <option value="">Keep current</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                      </select>
+                    </label>
+                    <label>
+                      Description
+                      <textarea name="description"></textarea>
+                    </label>
+                    <label>
+                      Containment action
+                      <textarea name="containment_action"></textarea>
+                    </label>
+                    <label>
+                      Occurred at
+                      <input type="datetime-local" name="occurred_at" />
+                    </label>
+                    <button type="submit">Save changes</button>
+                  </fieldset>
+                </form>
 
                 <form id="create-failure-report-form">
                   <fieldset>
@@ -416,6 +597,52 @@
 
                 <div class="table-wrapper" id="actions-table-wrapper"></div>
 
+                <form id="update-action-form">
+                  <fieldset>
+                    <legend>Update action item</legend>
+                    <label>
+                      Action
+                      <select name="action_id" id="update-action-id" required></select>
+                    </label>
+                    <p class="form-note">Provide only the fields that should change.</p>
+                    <label>
+                      Title
+                      <input type="text" name="title" />
+                    </label>
+                    <label>
+                      Description
+                      <textarea name="description"></textarea>
+                    </label>
+                    <div class="flex-row">
+                      <label>
+                        Assigned to (user id)
+                        <input type="text" name="assigned_to" id="update-action-assigned-to" />
+                      </label>
+                      <label>
+                        Due date
+                        <input type="date" name="due_date" />
+                      </label>
+                    </div>
+                    <div class="flex-row">
+                      <label>
+                        Status
+                        <select name="status">
+                          <option value="">Keep current</option>
+                          <option value="open">Open</option>
+                          <option value="in_progress">In progress</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </label>
+                      <label>
+                        Completed at
+                        <input type="datetime-local" name="completed_at" />
+                      </label>
+                    </div>
+                    <button type="submit">Save changes</button>
+                  </fieldset>
+                </form>
+
                 <form id="create-action-form">
                   <fieldset>
                     <legend>Create action item</legend>
@@ -473,6 +700,44 @@
             </div>
 
             <div class="table-wrapper" id="failure-codes-table-wrapper"></div>
+
+            <form id="update-failure-code-form">
+              <fieldset>
+                <legend>Update failure code</legend>
+                <label>
+                  Failure code
+                  <select name="code_id" id="update-failure-code-id" required></select>
+                </label>
+                <p class="form-note">Leave fields blank to keep their current values.</p>
+                <label>
+                  Name
+                  <input type="text" name="name" />
+                </label>
+                <label>
+                  Description
+                  <textarea name="description"></textarea>
+                </label>
+                <label>
+                  Default severity
+                  <select name="severity_default">
+                    <option value="">Keep current</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </label>
+                <label>
+                  Active
+                  <select name="active">
+                    <option value="">Keep current</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </label>
+                <button type="submit">Save changes</button>
+              </fieldset>
+            </form>
 
             <form id="create-failure-code-form">
               <fieldset>

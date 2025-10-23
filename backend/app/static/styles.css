@@ -83,6 +83,12 @@ label {
   font-size: 0.9rem;
 }
 
+.form-note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(148, 163, 184, 0.7);
+}
+
 input,
 select,
 textarea {
