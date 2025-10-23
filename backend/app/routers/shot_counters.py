@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -49,4 +49,36 @@ async def get_shot_counter(counter_id: str, session: AsyncSession = Depends(get_
         counter = await get_instance(session, models.ToolShotCounter, counter_id)
     except NoResultFound as exc:
         raise HTTPException(status_code=404, detail="Shot counter not found") from exc
+    return schemas.ToolShotCounterRead.from_orm(counter)
+
+
+@router.patch("/{counter_id}", response_model=schemas.ToolShotCounterRead)
+async def update_shot_counter(
+    counter_id: str,
+    payload: schemas.ToolShotCounterUpdate,
+    session: AsyncSession = Depends(get_session),
+) -> schemas.ToolShotCounterRead:
+    try:
+        counter = await get_instance(session, models.ToolShotCounter, counter_id)
+    except NoResultFound as exc:
+        raise HTTPException(status_code=404, detail="Shot counter not found") from exc
+
+    data = payload.dict(exclude_unset=True)
+    for key, value in data.items():
+        setattr(counter, key, value)
+
+    await session.flush()
+
+    if "shot_count" in data:
+        result = await session.execute(
+            select(func.coalesce(func.sum(models.ToolShotCounter.shot_count), 0)).where(
+                models.ToolShotCounter.tool_id == counter.tool_id
+            )
+        )
+        total_shots = result.scalar_one()
+        tool = await get_instance(session, models.Tool, counter.tool_id)
+        tool.current_shot_count = max(tool.initial_shot_count, tool.initial_shot_count + total_shots)
+
+    await session.commit()
+    await session.refresh(counter)
     return schemas.ToolShotCounterRead.from_orm(counter)

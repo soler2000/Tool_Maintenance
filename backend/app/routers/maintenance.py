@@ -6,7 +6,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .. import models, schemas
-from ..crud import create_instance, get_instance, list_instances
+from ..crud import create_instance, get_instance, list_instances, update_instance
 from ..database import get_session
 from ..dependencies import get_current_user
 
@@ -35,4 +35,19 @@ async def get_maintenance_log(log_id: str, session: AsyncSession = Depends(get_s
         log = await get_instance(session, models.MaintenanceLog, log_id)
     except NoResultFound as exc:
         raise HTTPException(status_code=404, detail="Maintenance log not found") from exc
+    return schemas.MaintenanceLogRead.from_orm(log)
+
+
+@router.patch("/{log_id}", response_model=schemas.MaintenanceLogRead)
+async def update_maintenance_log(
+    log_id: str,
+    payload: schemas.MaintenanceLogUpdate,
+    session: AsyncSession = Depends(get_session),
+) -> schemas.MaintenanceLogRead:
+    try:
+        log = await get_instance(session, models.MaintenanceLog, log_id)
+    except NoResultFound as exc:
+        raise HTTPException(status_code=404, detail="Maintenance log not found") from exc
+
+    log = await update_instance(session, log, payload.dict(exclude_unset=True))
     return schemas.MaintenanceLogRead.from_orm(log)

@@ -66,3 +66,18 @@ async def get_failure_report(report_id: str, session: AsyncSession = Depends(get
     except NoResultFound as exc:
         raise HTTPException(status_code=404, detail="Failure report not found") from exc
     return schemas.FailureReportRead.from_orm(report)
+
+
+@router.patch("/reports/{report_id}", response_model=schemas.FailureReportRead)
+async def update_failure_report(
+    report_id: str,
+    payload: schemas.FailureReportUpdate,
+    session: AsyncSession = Depends(get_session),
+) -> schemas.FailureReportRead:
+    try:
+        report = await get_instance(session, models.FailureReport, report_id)
+    except NoResultFound as exc:
+        raise HTTPException(status_code=404, detail="Failure report not found") from exc
+
+    report = await update_instance(session, report, payload.dict(exclude_unset=True))
+    return schemas.FailureReportRead.from_orm(report)

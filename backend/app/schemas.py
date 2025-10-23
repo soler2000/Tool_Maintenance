@@ -85,6 +85,13 @@ class ToolShotCounterRead(ToolShotCounterBase):
     recorded_at: datetime
 
 
+class ToolShotCounterUpdate(APIModel):
+    shot_count: Optional[int]
+    recorded_by: Optional[str]
+    source: Optional[ShotSource]
+    recorded_at: Optional[datetime]
+
+
 class MaintenanceLogBase(APIModel):
     tool_id: str
     performed_by: str
@@ -97,6 +104,16 @@ class MaintenanceLogBase(APIModel):
 
 class MaintenanceLogCreate(MaintenanceLogBase):
     pass
+
+
+class MaintenanceLogUpdate(APIModel):
+    tool_id: Optional[str]
+    performed_by: Optional[str]
+    checklist_template: Optional[str]
+    performed_at: Optional[datetime]
+    duration_minutes: Optional[int]
+    observations: Optional[str]
+    follow_up_required: Optional[bool]
 
 
 class MaintenanceLogRead(MaintenanceLogBase):
@@ -138,6 +155,16 @@ class FailureReportBase(APIModel):
 
 class FailureReportCreate(FailureReportBase):
     pass
+
+
+class FailureReportUpdate(APIModel):
+    tool_id: Optional[str]
+    reported_by: Optional[str]
+    failure_code_id: Optional[str]
+    severity: Optional[Severity]
+    description: Optional[str]
+    occurred_at: Optional[datetime]
+    containment_action: Optional[str]
 
 
 class FailureReportRead(FailureReportBase):
