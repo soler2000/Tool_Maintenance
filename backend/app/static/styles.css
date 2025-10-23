@@ -352,13 +352,14 @@ legend {
 
 .tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
 }
 
 .tab-panels {
-  display: grid;
-  gap: 24px;
+  position: relative;
 }
 
 .tab-button {
@@ -383,9 +384,17 @@ legend {
 }
 
 .tab-panel {
-  display: grid;
+  display: none;
   gap: 16px;
   scroll-margin-top: 96px;
+}
+
+.tab-panel[hidden] {
+  display: none !important;
+}
+
+.tab-panel:not([hidden]) {
+  display: grid;
 }
 
 .shot-total {
